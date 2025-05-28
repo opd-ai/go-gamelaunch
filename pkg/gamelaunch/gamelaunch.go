@@ -162,6 +162,8 @@ func (l *Launcher) setupServer() error {
 	// Setup authentication
 	if l.config.IsSet("auth.users") {
 		l.server.PasswordHandler = l.passwordHandler
+		l.server.PublicKeyHandler = l.sshPublicKeyHandler
+		l.server.KeyboardInteractiveHandler = l.keyboardInteractiveHandler
 	}
 
 	// Load host keys
