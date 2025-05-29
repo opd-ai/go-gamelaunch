@@ -19,7 +19,7 @@ games:
   # NetHack configuration
   nethack:
     name: "NetHack 3.6.7"
-    command: /usr/games/nethack
+    command: /usr/bin/nethack
     args: []
     env:
       - "NETHACKOPTIONS=color,showexp,time,toptenwin,autopickup,pickup_burden:unencumbered"
