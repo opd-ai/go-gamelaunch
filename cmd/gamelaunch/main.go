@@ -220,13 +220,48 @@ func integrateWithExistingServer() {
 `
 
 func generateConfigCmd() *cobra.Command {
-	return &cobra.Command{
+	var generateKeys bool
+	var overwriteKeys bool
+
+	cmd := &cobra.Command{
 		Use:   "generate-config",
 		Short: "Generate a sample configuration file",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return generateSampleConfig()
+			if err := generateSampleConfig(); err != nil {
+				return err
+			}
+
+			if generateKeys {
+				fmt.Println("Generating SSH host keys...")
+				opts := gamelaunch.DefaultKeygenOptions()
+				opts.OverwriteExisting = overwriteKeys
+
+				keyPaths, err := gamelaunch.GenerateHostKeys(".", opts)
+				if err != nil {
+					return fmt.Errorf("failed to generate host keys: %w", err)
+				}
+				fmt.Println("Generated host keys:")
+				for _, path := range keyPaths {
+					fmt.Printf("  - %s\n", path)
+				}
+			} else {
+				fmt.Println("\nNext steps:")
+				fmt.Println("1. Generate host keys:")
+				fmt.Println("   ssh-keygen -t rsa -f host_key_rsa -N ''")
+				fmt.Println("   ssh-keygen -t ed25519 -f host_key_ed25519 -N ''")
+			}
+
+			fmt.Println("2. Edit config.yaml to add your games")
+			fmt.Println("3. Run: gamelaunch")
+
+			return nil
 		},
 	}
+
+	cmd.Flags().BoolVar(&generateKeys, "generate-keys", false, "automatically generate SSH host keys")
+	cmd.Flags().BoolVar(&overwriteKeys, "overwrite-keys", false, "overwrite existing key files")
+
+	return cmd
 }
 
 func generateSampleConfig() error {
