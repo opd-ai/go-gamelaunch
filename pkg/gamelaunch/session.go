@@ -3,6 +3,7 @@ package gamelaunch
 import (
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -60,6 +61,9 @@ func (l *Launcher) LaunchGameWithPTY(gameID string, session ssh.Session, ptyReq 
 
 	// Prepare command
 	cmd := exec.Command(game.Command, game.Args...)
+
+	// Apply environment variables starting with the system environment
+	cmd.Env = append(os.Environ(), game.Env...)
 
 	// Apply environment variables
 	cmd.Env = append(cmd.Env, game.Env...)
