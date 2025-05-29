@@ -20,25 +20,25 @@ go install github.com/opd-ai/go-gamelaunch/cmd/gamelaunch@latest
 
 ## Quick Start
 
-1. Generate a sample configuration:
+1. Generate a sample configuration and SSH keys:
 ```bash
-gamelaunch generate-config
+gamelaunch generate-config --generate-keys
 ```
 
-2. Generate SSH host keys:
+Or if you prefer to generate them separately:
 ```bash
-ssh-keygen -t rsa -f host_key_rsa -N ''
+gamelaunch generate-config
 ssh-keygen -t ed25519 -f host_key_ed25519 -N ''
 ```
 
-3. Edit `config.yaml` to configure your games and users
+2. Edit `config.yaml` to configure your games and users
 
-4. Start the server:
+3. Start the server:
 ```bash
 gamelaunch
 ```
 
-5. Connect with SSH:
+4. Connect with SSH:
 ```bash
 ssh player1@localhost -p 2022
 ```
@@ -51,7 +51,6 @@ The server is configured via YAML file:
 server:
   address: :2022
   host_keys:
-    - ./host_key_rsa
     - ./host_key_ed25519
 
 auth:
@@ -98,6 +97,9 @@ gamelaunch --unix-socket /var/run/gamelaunch.sock
 
 # Show usage examples
 gamelaunch examples
+
+# Generate configuration with SSH keys
+gamelaunch generate-config --generate-keys
 ```
 
 ## Library Usage
