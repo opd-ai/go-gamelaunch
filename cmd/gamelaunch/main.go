@@ -277,7 +277,7 @@ games:
       - "ROGUEOPTS=color,terse"
 `
 
-	if err := os.WriteFile("config.yaml", []byte(config), 0644); err != nil {
+	if err := os.WriteFile("config.yaml", []byte(config), 0o644); err != nil {
 		return fmt.Errorf("failed to write config: %w", err)
 	}
 
