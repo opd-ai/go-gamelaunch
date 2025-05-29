@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  gamelaunch:
+    build: .
+    container_name: go-gamelaunch
+    ports:
+      - "2022:2022"
+    volumes:
+      # Persist SSH keys
+      - gamelaunch_keys:/app/keys
+      # Persist NetHack save files
+      - gamelaunch_saves:/var/games/nethack
+      # Optional: mount custom config
+      # - ./custom-config.yaml:/app/config/config.yaml:ro
+    environment:
+      - TERM=xterm-256color
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2022"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  gamelaunch_keys:
+    driver: local
+  gamelaunch_saves:
+    driver: local

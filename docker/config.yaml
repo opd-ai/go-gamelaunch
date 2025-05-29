@@ -1,0 +1,26 @@
+# Game Launcher Configuration
+server:
+  # Address to listen on
+  address: :2022
+  
+  # Host key files
+  host_keys:
+    - /app/keys/host_key_ed25519
+
+auth:
+  # User credentials for SSH access
+  users:
+    player: gamepass
+    demo: demo
+    guest: guest123
+    nethack: nethack
+
+games:
+  # NetHack configuration
+  nethack:
+    name: "NetHack 3.6.7"
+    command: /usr/games/nethack
+    args: []
+    env:
+      - "NETHACKOPTIONS=color,showexp,time,toptenwin,autopickup,pickup_burden:unencumbered"
+      - "TERM=xterm-256color"
