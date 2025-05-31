@@ -4,6 +4,7 @@ services:
   gamelaunch:
     image: ghcr.io/opd-ai/go-gamelaunch:latest
     container_name: go-gamelaunch
+    tty: true
     ports:
       - "2022:2022"
     volumes:
