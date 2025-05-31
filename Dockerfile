@@ -1,7 +1,7 @@
-FROM golang:1.24-alpine AS builder
+FROM golang:1.24 AS builder
 
 # Install build dependencies
-RUN apk add --no-cache git
+RUN apt-get update && apt-get install -y git
 
 # Set working directory
 WORKDIR /app
@@ -19,19 +19,19 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gamelaunch ./cmd/gamelaunch
 
 # Final stage
-FROM alpine:edge
-
-RUN mv /etc/profile.d/color_prompt.sh.disabled /etc/profile.d/color_prompt.sh
+FROM debian:sid-slim
 
 # Install NetHack and other dependencies
-RUN apk update
-RUN apk add --no-cache \
-    ncurses \
-    nethack \
+RUN apt-get update && apt-get install -y \
+    ncurses-bin \
+    nethack-console \
     openssh-client \
     ca-certificates \
-    && addgroup -g 1001 gamelaunch \
-    && adduser -D -u 1001 -G gamelaunch gamelaunch
+    netcat-openbsd \
+    && groupadd -g 1001 gamelaunch \
+    && useradd -m -u 1001 -g gamelaunch gamelaunch \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories
 RUN mkdir -p /app/config /app/keys /var/games/nethack \
@@ -44,6 +44,7 @@ COPY --from=builder /app/gamelaunch /app/gamelaunch
 COPY --chown=gamelaunch:gamelaunch docker/config.yaml /app/config/
 COPY --chown=gamelaunch:gamelaunch docker/entrypoint.sh /app/
 COPY --chown=gamelaunch:gamelaunch docker/.bashrc /home/gamelaunch/.bashrc
+
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
