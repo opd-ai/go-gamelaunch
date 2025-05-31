@@ -21,9 +21,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gamelaunch ./cmd/
 # Final stage
 FROM debian:sid-slim
 
-RUN sed -i 's/deb http:\/\/deb.debian.org\/debian\/ $(DEBIAN_VERSION) main/deb http:\/\/deb.debian.org\/debian\/ $(DEBIAN_VERSION) main contrib non-free/g' /etc/apt/sources.list
-RUN sed -i 's/deb-src http:\/\/deb.debian.org\/debian\/ $(DEBIAN_VERSION) main/deb-src http:\/\/deb.debian.org\/debian\/ $(DEBIAN_VERSION) main contrib non-free/g' /etc/apt/sources.list
-
 # Install NetHack and other dependencies
 RUN apt-get update && apt-get install -y \
     ncurses-bin \
