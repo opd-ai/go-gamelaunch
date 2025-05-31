@@ -43,7 +43,7 @@ COPY --from=builder /app/gamelaunch /app/gamelaunch
 # Copy configuration files
 COPY --chown=gamelaunch:gamelaunch docker/config.yaml /app/config/
 COPY --chown=gamelaunch:gamelaunch docker/entrypoint.sh /app/
-
+COPY --chown=gamelaunch:gamelaunch docker/.bashrc /home/gamelaunch/.bashrc
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
