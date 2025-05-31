@@ -26,6 +26,7 @@ RUN mv /etc/profile.d/color_prompt.sh.disabled /etc/profile.d/color_prompt.sh
 # Install NetHack and other dependencies
 RUN apk update
 RUN apk add --no-cache \
+    ncurses \
     nethack \
     openssh-client \
     ca-certificates \

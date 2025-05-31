@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   gamelaunch:
-    build: .
+    image: ghcr.io/opd-ai/go-gamelaunch:latest
     container_name: go-gamelaunch
     ports:
       - "2022:2022"
