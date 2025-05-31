@@ -25,6 +25,13 @@ FROM debian:sid-slim
 RUN apt-get update && apt-get install -y \
     ncurses-bin \
     nethack-console \
+    moria \
+    tome \
+    angband \
+    zangband \
+    omega-rpg \
+    crawl \
+    hearse \
     openssh-client \
     ca-certificates \
     netcat-openbsd \
