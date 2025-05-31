@@ -24,3 +24,4 @@ games:
     env:
       - "NETHACKOPTIONS=color,showexp,time,toptenwin,autopickup,pickup_burden:unencumbered"
       - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
