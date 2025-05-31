@@ -21,6 +21,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gamelaunch ./cmd/
 # Final stage
 FROM alpine:edge
 
+RUN mv /etc/profile.d/color_prompt.sh.disabled /etc/profile.d/color_prompt.sh
+
 # Install NetHack and other dependencies
 RUN apk update
 RUN apk add --no-cache \
