@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     zangband \
     omega-rpg \
     crawl \
+    cataclysm-dda-curses \
     hearse \
     openssh-client \
     ca-certificates \
