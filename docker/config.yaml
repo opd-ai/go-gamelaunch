@@ -18,10 +18,55 @@ auth:
 games:
   # NetHack configuration
   nethack:
-    name: "NetHack 3.6.7"
-    command: /usr/bin/nethack
+    name: "NetHack"
+    command: /usr/games/nethack
     args: []
     env:
       - "NETHACKOPTIONS=color,showexp,time,toptenwin,autopickup,pickup_burden:unencumbered"
+      - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
+
+  # Crawl configuration
+  crawl:
+    name: "Dungeon Crawl Stone Soup"
+    command: /usr/games/crawl
+    args: []
+    env:
+      - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
+
+  # Angband configuration
+  angband:
+    name: "Angband"
+    command: /usr/games/angband
+    args: [-mgcu]
+    env:
+      - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
+  
+  # Cataclysm Dark Days Ahead configuration
+  cdda:
+    name: "Cataclysm: Dark Days Ahead"
+    command: /usr/games/cataclysm
+    args: []
+    env:
+      - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
+  
+  # Moria configuration
+  moria:
+    name: "Moria"
+    command: /usr/games/moria
+    args: []
+    env:
+      - "TERM=xterm-256color"
+      - "COLORTERM=truecolor"
+  
+  # Omega configuration
+  omega:
+    name: "Omega"
+    command: /usr/games/omega-rpg
+    args: []
+    env:
       - "TERM=xterm-256color"
       - "COLORTERM=truecolor"

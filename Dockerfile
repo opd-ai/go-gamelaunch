@@ -25,6 +25,7 @@ FROM debian:sid-slim
 RUN apt-get update && apt-get install -y \
     ncurses-bin \
     nethack-console \
+    slashem \
     moria \
     angband \
     omega-rpg \
