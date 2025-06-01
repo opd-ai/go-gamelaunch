@@ -20,6 +20,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gamelaunch ./cmd/
 
 # Final stage
 FROM debian:sid-slim
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
 
 # Install NetHack and other dependencies
 RUN apt-get update && apt-get install -y \
