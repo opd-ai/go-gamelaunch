@@ -1,0 +1,44 @@
+# Game Launcher Configuration
+
+server:
+  # Address to listen on
+  address: :2022
+  
+  # Host key files (generate with: ssh-keygen -t rsa -f host_key_rsa)
+  host_keys:
+    - ./host_key_ed25519
+
+auth:
+  # User credentials for SSH access
+  users:
+    player1: password123
+    player2: password456
+    demo: demo
+
+games:
+  # Example game configurations
+  nethack:
+    name: "NetHack 3.6.6"
+    command: /usr/games/nethack
+    args: []
+    env:
+      - "NETHACKOPTIONS=color,showexp,time,toptenwin"
+  
+  crawl:
+    name: "Dungeon Crawl Stone Soup"
+    command: /usr/games/crawl
+    args: []
+    env: []
+  
+  angband:
+    name: "Angband"
+    command: /usr/games/angband
+    args: [-mgcu]
+    env: []
+  
+  rogue:
+    name: "Rogue"
+    command: /usr/games/rogue
+    args: []
+    env:
+      - "ROGUEOPTS=color,terse"
