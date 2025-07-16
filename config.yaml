@@ -19,6 +19,9 @@ auth:
     player1: password123
     player2: password456
     demo: demo
+  # Public key authentication (username: base64-encoded public key)
+  # pubkeys:
+  #   player1: "AAAAC3NzaC1lZDI1NTE5AAAAIC..."
 
 games:
   # Example game configurations

@@ -57,32 +57,31 @@ func (l *Launcher) passwordHandler(ctx gssh.Context, password string) bool {
 // returns true if authentication is successful
 func (l *Launcher) sshPublicKeyHandler(ctx gssh.Context, key gssh.PublicKey) bool {
 	users := l.config.GetStringMapString("auth.users")
+	pubkeys := l.config.GetStringMapString("auth.pubkeys")
 
-	if users == nil {
-		// Initialize users map if it doesn't exist
-		users = make(map[string]string)
-		l.config.Set("auth.users", users)
+	if pubkeys == nil {
+		pubkeys = make(map[string]string)
+		l.config.Set("auth.pubkeys", pubkeys)
 	}
 
 	user := ctx.User()
-	expectedKey, exists := users[user]
+	expectedKey, keyExists := pubkeys[user]
+	_, userExists := users[user]
 
-	if !exists {
-		// Check if automatic user registration is allowed
-		if !l.config.GetBool("auth.allow_registration") {
+	if !keyExists {
+		// Only allow registration if enabled and user exists or registration is allowed
+		if !l.config.GetBool("auth.allow_registration") && !userExists {
 			log.Printf("Authentication failed for user %s: user does not exist and registration is disabled", user)
 			return false
 		}
-
-		// Create new account if user doesn't exist and registration is allowed
-		users[user] = string(key.Marshal())
-		l.config.Set("auth.users", users)
-		// Save config changes
+		// Register new public key for user
+		pubkeys[user] = string(key.Marshal())
+		l.config.Set("auth.pubkeys", pubkeys)
 		if err := l.config.WriteConfig(); err != nil {
-			log.Printf("Failed to save new user: %v", err)
+			log.Printf("Failed to save new public key for user %s: %v", user, err)
 			return false
 		}
-		log.Printf("Created new user account: %s", user)
+		log.Printf("Registered new public key for user: %s", user)
 		return true
 	}
 

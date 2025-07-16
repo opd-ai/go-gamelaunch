@@ -86,20 +86,28 @@ if !exists {
 }
 ```
 
-### FUNCTIONAL MISMATCH: Public Key Authentication Implementation Error
+### FUNCTIONAL MISMATCH: Public Key Authentication Implementation Error [FIXED]
 **File:** auth.go:46-68  
 **Severity:** High  
-**Description:** The public key handler stores the raw marshaled key bytes as a string in the users map, but the users map is documented and configured as username:password pairs, not username:key pairs.  
+**Status:** FIXED - Public keys now stored in separate config section, password storage is not corrupted  
+**Description:** The public key handler previously stored the raw marshaled key bytes as a string in the users map, but the users map is documented and configured as username:password pairs, not username:key pairs.  
 **Expected Behavior:** Should have separate storage for public keys or use a different authentication mechanism  
 **Actual Behavior:** Overwrites password storage with binary key data, corrupting the user authentication system  
 **Impact:** Breaks the authentication system when public keys are used, making password authentication impossible for affected users  
 **Reproduction:** Connect with SSH public key authentication, then try password authentication for the same user  
+**Fix Applied:**
+- Added a new `auth.pubkeys` config section for public key authentication
+- Passwords remain in `auth.users`, public keys in `auth.pubkeys`
+- Both authentication methods can now coexist for the same user
 **Code Reference:**
 ```go
-if !exists {
-    // Create new account if user doesn't exist
-    users[user] = string(key.Marshal()) // This overwrites password storage
-    l.config.Set("auth.users", users)
+pubkeys := l.config.GetStringMapString("auth.pubkeys")
+// ...
+if !keyExists {
+    pubkeys[user] = string(key.Marshal())
+    l.config.Set("auth.pubkeys", pubkeys)
+    // ...
+}
 ```
 
 ### FUNCTIONAL MISMATCH: TLS Configuration Hardcoded Port [FIXED]
