@@ -65,9 +65,6 @@ func (l *Launcher) LaunchGameWithPTY(gameID string, session ssh.Session, ptyReq 
 	// Apply environment variables starting with the system environment
 	cmd.Env = append(os.Environ(), game.Env...)
 
-	// Apply environment variables
-	cmd.Env = append(cmd.Env, game.Env...)
-
 	// Apply user-specific environment
 	if user := session.User(); user != "" {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("USER=%s", user))

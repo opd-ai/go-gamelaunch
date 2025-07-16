@@ -8,7 +8,7 @@
 
 **Total Issues Found: 8**
 - CRITICAL BUG: 0 (2 FIXED)
-- FUNCTIONAL MISMATCH: 2 (1 FIXED)  
+- FUNCTIONAL MISMATCH: 1 (2 FIXED)  
 - MISSING FEATURE: 1 (1 FIXED)
 - EDGE CASE BUG: 1
 - PERFORMANCE ISSUE: 0
@@ -147,21 +147,21 @@ launcher, err = gamelaunch.NewLauncherWithListener(configPath, listener)
 // Should use: gamelaunch.NewLauncher(configPath, gamelaunch.WithListener(listener))
 ```
 
-### FUNCTIONAL MISMATCH: Double Environment Variable Application
+### FUNCTIONAL MISMATCH: Double Environment Variable Application [FIXED]
 **File:** session.go:62-67  
 **Severity:** Medium  
+**Status:** FIXED - Removed duplicate environment variable application  
 **Description:** The LaunchGameWithPTY function applies the game's environment variables twice, first to cmd.Env and then appending them again.  
 **Expected Behavior:** Environment variables should be applied once to avoid duplication  
 **Actual Behavior:** Game environment variables are duplicated in the process environment  
 **Impact:** May cause issues with environment variable parsing in games that are sensitive to duplicate variables  
 **Reproduction:** Launch any game and inspect the process environment variables  
+**Fix Applied:** Removed the duplicate `cmd.Env = append(cmd.Env, game.Env...)` line
 **Code Reference:**
 ```go
 // Apply environment variables starting with the system environment
 cmd.Env = append(os.Environ(), game.Env...)
-
-// Apply environment variables
-cmd.Env = append(cmd.Env, game.Env...) // Duplicate application
+// Removed duplicate: cmd.Env = append(cmd.Env, game.Env...)
 ```
 
 ### EDGE CASE BUG: Menu Model Type Assertion Without Safety Check
