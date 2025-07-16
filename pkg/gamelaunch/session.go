@@ -40,7 +40,11 @@ func (l *Launcher) sessionHandler(s ssh.Session) {
 	}
 
 	// Check if a game was selected
-	menuModel := finalModel.(menuModel)
+	menuModel, ok := finalModel.(menuModel)
+	if !ok {
+		io.WriteString(s, "Error: unexpected menu model type.\n")
+		return
+	}
 	if menuModel.selected == "" || menuModel.quitting {
 		return
 	}
