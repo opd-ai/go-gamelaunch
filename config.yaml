@@ -9,6 +9,11 @@ server:
     - ./host_key_ed25519
 
 auth:
+  # Allow automatic user registration when unknown users connect
+  # WARNING: Setting this to true is a security risk in production
+  # Default: false (secure)
+  allow_registration: false
+  
   # User credentials for SSH access
   users:
     player1: password123

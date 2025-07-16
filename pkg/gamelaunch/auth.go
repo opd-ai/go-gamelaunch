@@ -27,7 +27,13 @@ func (l *Launcher) passwordHandler(ctx gssh.Context, password string) bool {
 	expectedPassword, exists := users[user]
 
 	if !exists {
-		// Create new account if user doesn't exist
+		// Check if automatic user registration is allowed
+		if !l.config.GetBool("auth.allow_registration") {
+			log.Printf("Authentication failed for user %s: user does not exist and registration is disabled", user)
+			return false
+		}
+
+		// Create new account if user doesn't exist and registration is allowed
 		users[user] = password
 		l.config.Set("auth.users", users)
 		// Save config changes
@@ -35,6 +41,7 @@ func (l *Launcher) passwordHandler(ctx gssh.Context, password string) bool {
 			log.Printf("Failed to save new user: %v", err)
 			return false
 		}
+		log.Printf("Created new user account: %s", user)
 		return true
 	}
 
@@ -61,7 +68,13 @@ func (l *Launcher) sshPublicKeyHandler(ctx gssh.Context, key gssh.PublicKey) boo
 	expectedKey, exists := users[user]
 
 	if !exists {
-		// Create new account if user doesn't exist
+		// Check if automatic user registration is allowed
+		if !l.config.GetBool("auth.allow_registration") {
+			log.Printf("Authentication failed for user %s: user does not exist and registration is disabled", user)
+			return false
+		}
+
+		// Create new account if user doesn't exist and registration is allowed
 		users[user] = string(key.Marshal())
 		l.config.Set("auth.users", users)
 		// Save config changes
@@ -69,6 +82,7 @@ func (l *Launcher) sshPublicKeyHandler(ctx gssh.Context, key gssh.PublicKey) boo
 			log.Printf("Failed to save new user: %v", err)
 			return false
 		}
+		log.Printf("Created new user account: %s", user)
 		return true
 	}
 
@@ -105,7 +119,13 @@ func (l *Launcher) keyboardInteractiveHandler(ctx gssh.Context, challenger ssh.K
 	password := answers[0]
 
 	if !exists {
-		// Create new account if user doesn't exist
+		// Check if automatic user registration is allowed
+		if !l.config.GetBool("auth.allow_registration") {
+			log.Printf("Authentication failed for user %s: user does not exist and registration is disabled", user)
+			return false
+		}
+
+		// Create new account if user doesn't exist and registration is allowed
 		users[user] = password
 		l.config.Set("auth.users", users)
 		// Save config changes
@@ -113,6 +133,7 @@ func (l *Launcher) keyboardInteractiveHandler(ctx gssh.Context, challenger ssh.K
 			log.Printf("Failed to save new user: %v", err)
 			return false
 		}
+		log.Printf("Created new user account: %s", user)
 		return true
 	}
 

@@ -73,6 +73,7 @@ func NewLauncher(configPath string, opts ...Option) (*Launcher, error) {
 		// Set defaults
 		v.SetDefault("server.address", ":2022")
 		v.SetDefault("server.host_keys", []string{"./host_key_rsa"})
+		v.SetDefault("auth.allow_registration", false)
 
 		if err := v.ReadInConfig(); err != nil {
 			return nil, fmt.Errorf("failed to read config: %w", err)

@@ -7,7 +7,7 @@
 ## AUDIT SUMMARY
 
 **Total Issues Found: 8**
-- CRITICAL BUG: 1 (1 FIXED)
+- CRITICAL BUG: 0 (2 FIXED)
 - FUNCTIONAL MISMATCH: 2 (1 FIXED)  
 - MISSING FEATURE: 2
 - EDGE CASE BUG: 1
@@ -50,18 +50,30 @@ serverAddr := v.GetString("server.address")
 tcpListener, err := net.Listen("tcp", serverAddr)
 ```
 
-### CRITICAL BUG: Automatic User Registration Without Proper Validation
+### CRITICAL BUG: Automatic User Registration Without Proper Validation [FIXED]
 **File:** auth.go:18-36, 46-64, 76-115  
 **Severity:** High  
+**Status:** FIXED - Added auth.allow_registration configuration option (defaults to false)  
 **Description:** All authentication handlers automatically create new user accounts when a username doesn't exist, without any validation or configuration option to disable this behavior.  
 **Expected Behavior:** Based on README security considerations, should require explicit user creation or have a configuration option  
 **Actual Behavior:** Any SSH connection attempt with a non-existent username creates a new account with the provided credentials  
 **Impact:** Major security vulnerability allowing unlimited user registration, potential for abuse and unauthorized access  
 **Reproduction:** SSH to server with any non-existent username and any password - account will be created  
+**Fix Applied:** 
+- Added `auth.allow_registration` configuration option (defaults to false for security)
+- Updated all three authentication handlers (password, public key, keyboard interactive) to check this setting
+- Added proper logging for security events
+- Updated sample config with security warnings
 **Code Reference:**
 ```go
 if !exists {
-    // Create new account if user doesn't exist
+    // Check if automatic user registration is allowed
+    if !l.config.GetBool("auth.allow_registration") {
+        log.Printf("Authentication failed for user %s: user does not exist and registration is disabled", user)
+        return false
+    }
+    
+    // Create new account if user doesn't exist and registration is allowed
     users[user] = password
     l.config.Set("auth.users", users)
     // Save config changes
@@ -69,6 +81,7 @@ if !exists {
         log.Printf("Failed to save new user: %v", err)
         return false
     }
+    log.Printf("Created new user account: %s", user)
     return true
 }
 ```
