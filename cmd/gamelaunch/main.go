@@ -40,7 +40,7 @@ terminal-based roguelike games over SSH connections.`,
 				}
 				defer listener.Close()
 
-				launcher, err = gamelaunch.NewLauncherWithListener(configPath, listener)
+				launcher, err = gamelaunch.NewLauncher(configPath, gamelaunch.WithListener(listener))
 				if err != nil {
 					return fmt.Errorf("failed to create launcher: %w", err)
 				}
@@ -78,7 +78,7 @@ terminal-based roguelike games over SSH connections.`,
 				// Wrap with TLS
 				tlsListener := tls.NewListener(tcpListener, tlsConfig)
 
-				launcher, err = gamelaunch.NewLauncherWithListener(configPath, tlsListener)
+				launcher, err = gamelaunch.NewLauncher(configPath, gamelaunch.WithListener(tlsListener))
 				if err != nil {
 					return fmt.Errorf("failed to create launcher: %w", err)
 				}

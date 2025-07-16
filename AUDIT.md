@@ -141,18 +141,21 @@ if !keyExists {
 v.SetDefault("server.host_keys", []string{"./host_key_ed25519"})
 ```
 
-### MISSING FEATURE: Functional Options WithListener and WithConfig Not Used in CLI
+### MISSING FEATURE: Functional Options WithListener and WithConfig Not Used in CLI [FIXED]
 **File:** cmd/gamelaunch/main.go:27-75  
 **Severity:** Medium  
-**Description:** The CLI implementation creates listeners manually and uses NewLauncherWithListener instead of utilizing the functional options pattern documented in the README.  
+**Status:** FIXED - CLI now uses functional options pattern for all launcher creation  
+**Description:** The CLI implementation created listeners manually and used NewLauncherWithListener instead of utilizing the functional options pattern documented in the README.  
 **Expected Behavior:** Should use NewLauncher with functional options for consistency with library documentation  
-**Actual Behavior:** Uses separate constructor functions, not demonstrating the documented API  
+**Actual Behavior:** Used separate constructor functions, not demonstrating the documented API  
 **Impact:** API inconsistency between CLI and library usage examples, confusing for library users  
 **Reproduction:** Compare main.go implementation with README library usage examples  
+**Fix Applied:**
+- CLI now uses `NewLauncher(configPath, gamelaunch.WithListener(listener))` for all custom listener cases
+- Matches the documented functional options pattern
 **Code Reference:**
 ```go
-launcher, err = gamelaunch.NewLauncherWithListener(configPath, listener)
-// Should use: gamelaunch.NewLauncher(configPath, gamelaunch.WithListener(listener))
+launcher, err = gamelaunch.NewLauncher(configPath, gamelaunch.WithListener(listener))
 ```
 
 ### FUNCTIONAL MISMATCH: Double Environment Variable Application [FIXED]
