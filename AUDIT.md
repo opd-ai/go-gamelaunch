@@ -7,8 +7,8 @@
 ## AUDIT SUMMARY
 
 **Total Issues Found: 8**
-- CRITICAL BUG: 2
-- FUNCTIONAL MISMATCH: 3  
+- CRITICAL BUG: 1 (1 FIXED)
+- FUNCTIONAL MISMATCH: 2 (1 FIXED)  
 - MISSING FEATURE: 2
 - EDGE CASE BUG: 1
 - PERFORMANCE ISSUE: 0
@@ -23,21 +23,31 @@
 
 ## DETAILED FINDINGS
 
-### CRITICAL BUG: Nil Pointer Dereference in TLS Listener Creation
+### CRITICAL BUG: Nil Pointer Dereference in TLS Listener Creation [FIXED]
 **File:** cmd/gamelaunch/main.go:58  
 **Severity:** High  
-**Description:** The TLS listener creation hardcodes port ":2222" instead of using the configured server address, and doesn't handle the case where the TCP listener creation fails before wrapping with TLS.  
+**Status:** FIXED - TLS listener now uses configured server address from config.yaml  
+**Description:** The TLS listener creation hardcoded port ":2222" instead of using the configured server address, and doesn't handle the case where the TCP listener creation fails before wrapping with TLS.  
 **Expected Behavior:** Should use the configured server address from config file for TLS connections  
 **Actual Behavior:** Always uses port 2222 for TLS, ignoring configuration  
 **Impact:** TLS connections cannot use custom ports configured in config.yaml, breaking deployment flexibility  
 **Reproduction:** Run `gamelaunch --tls --tls-cert server.crt --tls-key server.key` with a config that specifies a different port  
+**Fix Applied:** Added config loading in main.go before TLS listener creation to read server.address and use it for the TCP listener
 **Code Reference:**
 ```go
-// Create base TCP listener
-tcpListener, err := net.Listen("tcp", ":2222")
-if err != nil {
-    return fmt.Errorf("failed to create TCP listener: %w", err)
+// Load config to get server address
+v := viper.New()
+v.SetConfigFile(configPath)
+v.SetDefault("server.address", ":2022")
+
+if err := v.ReadInConfig(); err != nil {
+    return fmt.Errorf("failed to read config: %w", err)
 }
+
+serverAddr := v.GetString("server.address")
+
+// Create base TCP listener using configured address
+tcpListener, err := net.Listen("tcp", serverAddr)
 ```
 
 ### CRITICAL BUG: Automatic User Registration Without Proper Validation
@@ -79,19 +89,16 @@ if !exists {
     l.config.Set("auth.users", users)
 ```
 
-### FUNCTIONAL MISMATCH: TLS Configuration Hardcoded Port
+### FUNCTIONAL MISMATCH: TLS Configuration Hardcoded Port [FIXED]
 **File:** cmd/gamelaunch/main.go:58  
 **Severity:** Medium  
+**Status:** FIXED - Same fix as above critical bug  
 **Description:** The TLS implementation ignores the configured server address and hardcodes port 2222, contradicting the README's claim that configuration is respected for all connection types.  
 **Expected Behavior:** TLS should use the configured server.address from config.yaml  
 **Actual Behavior:** Always binds to :2222 regardless of configuration  
 **Impact:** TLS deployments cannot use custom ports, breaking containerized and multi-service deployments  
 **Reproduction:** Set server.address to :3000 in config.yaml, run with --tls flag, observe connection only works on port 2222  
-**Code Reference:**
-```go
-// Create base TCP listener
-tcpListener, err := net.Listen("tcp", ":2222")
-```
+**Fix Applied:** Same as critical bug above - TLS listener now reads and uses configured server address
 
 ### MISSING FEATURE: RSA Key Generation Not Implemented
 **File:** keygen.go:29-42  

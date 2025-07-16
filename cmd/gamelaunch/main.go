@@ -9,6 +9,7 @@ import (
 
 	"github.com/opd-ai/go-gamelaunch/pkg/gamelaunch"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -47,6 +48,17 @@ terminal-based roguelike games over SSH connections.`,
 				log.Printf("Starting game launcher on unix socket: %s", unixSocket)
 
 			case useTLS:
+				// Load config to get server address
+				v := viper.New()
+				v.SetConfigFile(configPath)
+				v.SetDefault("server.address", ":2022")
+
+				if err := v.ReadInConfig(); err != nil {
+					return fmt.Errorf("failed to read config: %w", err)
+				}
+
+				serverAddr := v.GetString("server.address")
+
 				// TLS-wrapped TCP listener
 				cert, err := tls.LoadX509KeyPair(tlsCert, tlsKey)
 				if err != nil {
@@ -57,8 +69,8 @@ terminal-based roguelike games over SSH connections.`,
 					Certificates: []tls.Certificate{cert},
 				}
 
-				// Create base TCP listener
-				tcpListener, err := net.Listen("tcp", ":2222")
+				// Create base TCP listener using configured address
+				tcpListener, err := net.Listen("tcp", serverAddr)
 				if err != nil {
 					return fmt.Errorf("failed to create TCP listener: %w", err)
 				}
