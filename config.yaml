@@ -4,7 +4,7 @@ server:
   # Address to listen on
   address: :2022
   
-  # Host key files (generate with: ssh-keygen -t rsa -f host_key_rsa)
+  # Host key files (generate with: ssh-keygen -t ed25519 -f host_key_ed25519)
   host_keys:
     - ./host_key_ed25519
 

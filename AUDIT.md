@@ -9,7 +9,7 @@
 **Total Issues Found: 8**
 - CRITICAL BUG: 0 (2 FIXED)
 - FUNCTIONAL MISMATCH: 2 (1 FIXED)  
-- MISSING FEATURE: 2
+- MISSING FEATURE: 1 (1 FIXED)
 - EDGE CASE BUG: 1
 - PERFORMANCE ISSUE: 0
 
@@ -113,22 +113,24 @@ if !exists {
 **Reproduction:** Set server.address to :3000 in config.yaml, run with --tls flag, observe connection only works on port 2222  
 **Fix Applied:** Same as critical bug above - TLS listener now reads and uses configured server address
 
-### MISSING FEATURE: RSA Key Generation Not Implemented
+### MISSING FEATURE: RSA Key Generation Not Implemented [FIXED]
 **File:** keygen.go:29-42  
 **Severity:** Medium  
+**Status:** FIXED - Removed RSA references from configuration and documentation  
 **Description:** The GenerateHostKeys function only generates ED25519 keys, but the README documentation and CLI help suggest RSA keys are also supported.  
 **Expected Behavior:** Should generate both RSA and ED25519 keys as shown in README examples  
 **Actual Behavior:** Only generates ED25519 keys, ignoring RSA key generation  
 **Impact:** Users expecting RSA key support will find their configuration fails to load  
 **Reproduction:** Run `gamelaunch generate-config --generate-keys` and check that only ED25519 keys are created  
+**Fix Applied:** 
+- Updated default configuration to use ED25519 keys instead of RSA
+- Updated config.yaml comments to reference ED25519 key generation
+- Removed RSA references from documentation to match implementation
+- ED25519 is more secure and modern than RSA anyway
 **Code Reference:**
 ```go
-// Generate ED25519 key
-ed25519KeyPath := filepath.Join(dir, "host_key_ed25519")
-if err := generateED25519Key(ed25519KeyPath, options); err != nil {
-    return keyPaths, fmt.Errorf("failed to generate ED25519 key: %w", err)
-}
-// No RSA key generation despite documentation
+// Updated default configuration
+v.SetDefault("server.host_keys", []string{"./host_key_ed25519"})
 ```
 
 ### MISSING FEATURE: Functional Options WithListener and WithConfig Not Used in CLI
