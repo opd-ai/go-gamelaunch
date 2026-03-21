@@ -29,7 +29,7 @@ func DefaultKeygenOptions() KeygenOptions {
 // Returns the paths to the generated key files
 func GenerateHostKeys(dir string, options KeygenOptions) ([]string, error) {
 	// Create directory if it doesn't exist
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, fmt.Errorf("failed to create directory: %w", err)
 	}
 
@@ -72,7 +72,7 @@ func generateED25519Key(filePath string, options KeygenOptions) error {
 	}
 
 	// Write private key to file
-	keyOut, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	keyOut, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
 		return fmt.Errorf("failed to open key file: %w", err)
 	}
@@ -100,7 +100,7 @@ func writeED25519PublicKey(filePath string, pubKey ed25519.PublicKey) error {
 
 	pubKeyBytes := ssh.MarshalAuthorizedKey(sshPubKey)
 
-	if err := os.WriteFile(filePath, pubKeyBytes, 0644); err != nil {
+	if err := os.WriteFile(filePath, pubKeyBytes, 0o644); err != nil {
 		return fmt.Errorf("failed to write public key file: %w", err)
 	}
 
